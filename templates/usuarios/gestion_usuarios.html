@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static auth_extras %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Gestión de Usuarios</h2>
+
+  <!-- Barra de búsqueda y filtro de rol -->
+  <form method="get" class="form-inline mb-3">
+    <input type="text" name="q" class="form-control mr-2" placeholder="Buscar usuarios..." value="{{ request.GET.q }}">
+    <select name="rol" class="form-control mr-2">
+      <option value="" {% if not request.GET.rol %}selected{% endif %}>Todos los roles</option>
+      <option value="Administrador" {% if request.GET.rol == 'Administrador' %}selected{% endif %}>Administrador</option>
+      <option value="Recepcionista" {% if request.GET.rol == 'Recepcionista' %}selected{% endif %}>Recepcionista</option>
+      <option value="Ama de Llaves" {% if request.GET.rol == 'Ama de Llaves' %}selected{% endif %}>Ama de Llaves</option>
+      <option value="Huésped" {% if request.GET.rol == 'Huésped' %}selected{% endif %}>Huésped</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Documento</th>
+          <th>Teléfono</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+          <td>{{ usuario.username }}</td>
+          <td>{{ usuario.email }}</td>
+          <td>
+            {% if usuario|has_group:"Administrador" %}
+            <span class="badge badge-primary">Administrador</span>
+            {% elif usuario|has_group:"Recepcionista" %}
+            <span class="badge badge-info">Recepcionista</span>
+            {% elif usuario|has_group:"Ama de Llaves" %}
+            <span class="badge badge-warning">Ama de Llaves</span>
+            {% else %}
+            <span class="badge badge-secondary">Huésped</span>
+            {% endif %}
+          </td>
+          <td>{{ usuario.perfil.documento|default:"-" }}</td>
+          <td>{{ usuario.perfil.telefono|default:"-" }}</td>
+          <td>
+            <!-- Botón para abrir modal de cambio de rol -->
+            <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#cambiarRolModal{{ usuario.id }}">
+              Cambiar rol
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="cambiarRolModal{{ usuario.id }}" tabindex="-1" role="dialog" aria-labelledby="cambiarRolLabel{{ usuario.id }}" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="cambiarRolLabel{{ usuario.id }}">Cambiar rol de {{ usuario.username }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <form method="post" action="{% url 'cambiar_rol_usuario' usuario.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                      <div class="form-group">
+                        <label for="rolSelect{{ usuario.id }}">Nuevo rol</label>
+                        <select name="rol" id="rolSelect{{ usuario.id }}" class="form-control">
+                          <option value="Administrador">Administrador</option>
+                          <option value="Recepcionista">Recepcionista</option>
+                          <option value="Ama de Llaves">Ama de Llaves</option>
+                          <option value="Huésped">Huésped</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                      <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center">No hay usuarios que coincidan con los filtros.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación (si la vista provee ``page_obj``) -->
+  {% if page_obj %}
+  <nav aria-label="Paginación de usuarios">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.rol %}&rol={{ request.GET.rol }}{% endif %}">Anterior</a></li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+      <li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.rol %}&rol={{ request.GET.rol }}{% endif %}">{{ num }}</a></li>
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.rol %}&rol={{ request.GET.rol }}{% endif %}">Siguiente</a></li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

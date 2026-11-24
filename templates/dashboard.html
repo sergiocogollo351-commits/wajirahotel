@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4" data-aos="fade-up">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold m-0"><i class="bi bi-speedometer2 text-primary me-2"></i>Dashboard Gerencial</h2>
+            <p class="text-muted small m-0">Métricas en tiempo real de ocupación, facturación e infraestructura</p>
+        </div>
+        <a href="{% url 'reportes' %}" class="btn btn-outline-primary fw-bold shadow-sm">
+            <i class="bi bi-file-earmark-bar-graph me-1"></i> Generar Reportes
+        </a>
+    </div>
+
+    <!-- Tarjetas Métricas Principales -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm bg-primary text-white p-3 h-100 card-animate">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase fw-bold mb-1 opacity-75 small">Ocupación</h6>
+                        <h2 class="fw-bold m-0 fs-3">{{ porcentaje_ocupacion }}%</h2>
+                    </div>
+                    <div class="fs-2 opacity-75"><i class="bi bi-pie-chart"></i></div>
+                </div>
+                <small class="mt-2 d-block small opacity-75">{{ ocupadas }} de {{ total_habitaciones }} ocupadas</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm bg-success text-white p-3 h-100 card-animate">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase fw-bold mb-1 opacity-75 small">Ingresos</h6>
+                        <h2 class="fw-bold m-0 fs-3">${{ total_ingresos|floatformat:0 }}</h2>
+                    </div>
+                    <div class="fs-2 opacity-75"><i class="bi bi-cash-stack"></i></div>
+                </div>
+                <small class="mt-2 d-block small opacity-75">Recaudo total acumulado</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm bg-info text-white p-3 h-100 card-animate">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase fw-bold mb-1 opacity-75 small">Reservas</h6>
+                        <h2 class="fw-bold m-0 fs-3">{{ reservas_activas }}</h2>
+                    </div>
+                    <div class="fs-2 opacity-75"><i class="bi bi-calendar-check"></i></div>
+                </div>
+                <small class="mt-2 d-block small opacity-75">{{ reservas_hoy }} llegada(s) hoy</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm bg-dark text-white p-3 h-100 card-animate">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase fw-bold mb-1 opacity-75 small">Huéspedes</h6>
+                        <h2 class="fw-bold m-0 fs-3">{{ total_huespedes }}</h2>
+                    </div>
+                    <div class="fs-2 opacity-75"><i class="bi bi-people"></i></div>
+                </div>
+                <small class="mt-2 d-block small opacity-75">Clientes registrados</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Gráficos e Indicadores -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-door-open"></i> Estado de Habitaciones</h5>
+                <div style="max-height: 280px; position: relative;">
+                    <canvas id="habitacionesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-list-stars"></i> Resumen de Infraestructura</h5>
+                <ul class="list-group list-group-flush fs-6">
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <span><i class="bi bi-check-circle-fill text-success me-2"></i> Habitaciones Disponibles</span>
+                        <span class="badge bg-success rounded-pill fs-6">{{ disponibles }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <span><i class="bi bi-building-fill-lock text-primary me-2"></i> Habitaciones Ocupadas</span>
+                        <span class="badge bg-primary rounded-pill fs-6">{{ ocupadas }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <span><i class="bi bi-wrench-adjustable-circle text-warning me-2"></i> En Mantenimiento</span>
+                        <span class="badge bg-warning text-dark rounded-pill fs-6">{{ mantenimiento }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 fw-bold">
+                        <span><i class="bi bi-building me-2"></i> Total Capacidad Registrada</span>
+                        <span class="fs-6">{{ total_habitaciones }} Hab.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('habitacionesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Disponibles', 'Ocupadas', 'Mantenimiento'],
+                datasets: [{
+                    data: {{ grafico_habitaciones|safe }},
+                    backgroundColor: ['#198754', '#0d6efd', '#ffc107'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

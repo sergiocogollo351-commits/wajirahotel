@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-3 my-md-4" data-aos="fade-up">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="card-header bg-primary text-white fw-bold fs-5">
+                <i class="bi bi-person-plus-fill me-2"></i> Registrar Nuevo Huésped
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" id="formHuesped" novalidate>
+                    {% csrf_token %}
+                    {% if next_url %}
+                        <input type="hidden" name="next" value="{{ next_url }}">
+                    {% endif %}
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label for="id_tipo_documento" class="form-label fw-bold small">Tipo Doc.</label>
+                            <select id="id_tipo_documento" name="tipo_documento" class="form-select" required>
+                                <option value="CC" {% if form_data.tipo_documento == 'CC' or not form_data.tipo_documento %}selected{% endif %}>Cédula (CC)</option>
+                                <option value="CE" {% if form_data.tipo_documento == 'CE' %}selected{% endif %}>Cédula Ext. (CE)</option>
+                                <option value="PASAPORTE" {% if form_data.tipo_documento == 'PASAPORTE' %}selected{% endif %}>Pasaporte</option>
+                                <option value="TI" {% if form_data.tipo_documento == 'TI' %}selected{% endif %}>Tarjeta Identidad (TI)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label for="id_numero_documento" class="form-label fw-bold small">N° Documento</label>
+                            <input type="text" 
+                                   id="id_numero_documento" 
+                                   name="numero_documento" 
+                                   class="form-control" 
+                                   value="{{ form_data.numero_documento|default:'' }}"
+                                   inputmode="numeric" 
+                                   minlength="6" 
+                                   maxlength="10" 
+                                   placeholder="Ej. 1082000000" 
+                                   required>
+                            <small id="doc_help_text" class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Solo números (6 a 10 dígitos)
+                            </small>
+                            <div class="invalid-feedback">Ingresa un número de documento válido.</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="id_nombres" class="form-label fw-bold small">Nombres</label>
+                            <input type="text" 
+                                   id="id_nombres" 
+                                   name="nombres" 
+                                   class="form-control" 
+                                   value="{{ form_data.nombres|default:'' }}"
+                                   minlength="2" 
+                                   maxlength="50" 
+                                   placeholder="Ej. Carlos Alberto" 
+                                   pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]{2,50}$" 
+                                   required>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Solo letras y espacios
+                            </small>
+                            <div class="invalid-feedback">Solo se permiten letras y espacios (mínimo 2 caracteres).</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_apellidos" class="form-label fw-bold small">Apellidos</label>
+                            <input type="text" 
+                                   id="id_apellidos" 
+                                   name="apellidos" 
+                                   class="form-control" 
+                                   value="{{ form_data.apellidos|default:'' }}"
+                                   minlength="2" 
+                                   maxlength="50" 
+                                   placeholder="Ej. Gómez Pérez" 
+                                   pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]{2,50}$" 
+                                   required>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Solo letras y espacios
+                            </small>
+                            <div class="invalid-feedback">Solo se permiten letras y espacios (mínimo 2 caracteres).</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label for="id_telefono" class="form-label fw-bold small">Teléfono de Contacto</label>
+                            <input type="tel" 
+                                   id="id_telefono" 
+                                   name="telefono" 
+                                   class="form-control" 
+                                   value="{{ form_data.telefono|default:'' }}"
+                                   inputmode="numeric" 
+                                   minlength="10" 
+                                   maxlength="10" 
+                                   placeholder="Ej. 3001234567" 
+                                   pattern="^[0-9]{10}$" 
+                                   required>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Solo números (10 dígitos)
+                            </small>
+                            <div class="invalid-feedback">Ingresa 10 dígitos numéricos.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="id_correo" class="form-label fw-bold small">Correo Electrónico</label>
+                            <input type="email" 
+                                   id="id_correo" 
+                                   name="correo" 
+                                   class="form-control" 
+                                   value="{{ form_data.correo|default:'' }}"
+                                   maxlength="80" 
+                                   placeholder="cliente@correo.com" 
+                                   pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" 
+                                   required>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Formato de correo (sin espacios)
+                            </small>
+                            <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="id_nacionalidad" class="form-label fw-bold small">Nacionalidad</label>
+                            <select id="id_nacionalidad" name="nacionalidad" class="form-select" required>
+                                <option value="Colombiana" {% if form_data.nacionalidad == 'Colombiana' or not form_data.nacionalidad %}selected{% endif %}>Colombiana</option>
+                                <option value="Venezolana" {% if form_data.nacionalidad == 'Venezolana' %}selected{% endif %}>Venezolana</option>
+                                <option value="Estadounidense" {% if form_data.nacionalidad == 'Estadounidense' %}selected{% endif %}>Estadounidense</option>
+                                <option value="Española" {% if form_data.nacionalidad == 'Española' %}selected{% endif %}>Española</option>
+                                <option value="Argentina" {% if form_data.nacionalidad == 'Argentina' %}selected{% endif %}>Argentina</option>
+                                <option value="Peruana" {% if form_data.nacionalidad == 'Peruana' %}selected{% endif %}>Peruana</option>
+                                <option value="Ecuatoriana" {% if form_data.nacionalidad == 'Ecuatoriana' %}selected{% endif %}>Ecuatoriana</option>
+                                <option value="Mexicana" {% if form_data.nacionalidad == 'Mexicana' %}selected{% endif %}>Mexicana</option>
+                                <option value="Panameña" {% if form_data.nacionalidad == 'Panameña' %}selected{% endif %}>Panameña</option>
+                                <option value="Chilena" {% if form_data.nacionalidad == 'Chilena' %}selected{% endif %}>Chilena</option>
+                                <option value="Brasileña" {% if form_data.nacionalidad == 'Brasileña' %}selected{% endif %}>Brasileña</option>
+                                <option value="Francesa" {% if form_data.nacionalidad == 'Francesa' %}selected{% endif %}>Francesa</option>
+                                <option value="Alemana" {% if form_data.nacionalidad == 'Alemana' %}selected{% endif %}>Alemana</option>
+                                <option value="Italiana" {% if form_data.nacionalidad == 'Italiana' %}selected{% endif %}>Italiana</option>
+                                <option value="Canadiense" {% if form_data.nacionalidad == 'Canadiense' %}selected{% endif %}>Canadiense</option>
+                                <option value="Otra" {% if form_data.nacionalidad == 'Otra' %}selected{% endif %}>Otra nacionalidad</option>
+                            </select>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-globe text-primary me-1"></i>País de origen
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-2 border-top">
+                        <a href="{% if next_url %}{{ next_url }}{% else %}{% url 'lista_huespedes' %}{% endif %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary fw-bold">
+                            <i class="bi bi-check-circle-fill me-1"></i> Guardar Huésped
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const nombresInput = document.getElementById('id_nombres');
+    const apellidosInput = document.getElementById('id_apellidos');
+    const tipoDocSelect = document.getElementById('id_tipo_documento');
+    const numDocInput = document.getElementById('id_numero_documento');
+    const docHelpText = document.getElementById('doc_help_text');
+    const telefonoInput = document.getElementById('id_telefono');
+    const correoInput = document.getElementById('id_correo');
+    const form = document.getElementById('formHuesped');
+
+    // 1. RESTRICCIÓN PARA NOMBRES Y APELLIDOS: Solo letras y espacios
+    function restringirSoloLetras(input) {
+        input.addEventListener('keypress', function (e) {
+            if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+        input.addEventListener('input', function () {
+            this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+        });
+    }
+    restringirSoloLetras(nombresInput);
+    restringirSoloLetras(apellidosInput);
+
+    // 2. RESTRICCIÓN PARA NÚMERO DE DOCUMENTO: Dinámico según tipo
+    function actualizarReglasDocumento() {
+        const tipo = tipoDocSelect.value;
+        if (tipo === 'CC' || tipo === 'TI') {
+            numDocInput.setAttribute('inputmode', 'numeric');
+            numDocInput.setAttribute('minlength', '6');
+            numDocInput.setAttribute('maxlength', '10');
+            numDocInput.setAttribute('pattern', '^[0-9]{6,10}$');
+            numDocInput.placeholder = 'Ej. 1082000000';
+            docHelpText.innerHTML = '<i class="bi bi-info-circle text-primary me-1"></i>Solo números (6 a 10 dígitos)';
+            numDocInput.value = numDocInput.value.replace(/[^0-9]/g, '').slice(0, 10);
+        } else {
+            numDocInput.setAttribute('inputmode', 'text');
+            numDocInput.setAttribute('minlength', '5');
+            numDocInput.setAttribute('maxlength', '15');
+            numDocInput.setAttribute('pattern', '^[a-zA-Z0-9]{5,15}$');
+            numDocInput.placeholder = 'Ej. AB123456';
+            docHelpText.innerHTML = '<i class="bi bi-info-circle text-primary me-1"></i>Letras y números (5 a 15 caracteres)';
+            numDocInput.value = numDocInput.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 15);
+        }
+    }
+
+    tipoDocSelect.addEventListener('change', actualizarReglasDocumento);
+
+    numDocInput.addEventListener('keypress', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
+        const tipo = tipoDocSelect.value;
+        if (tipo === 'CC' || tipo === 'TI') {
+            if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+        } else {
+            if (!/^[a-zA-Z0-9]$/.test(e.key)) e.preventDefault();
+        }
+    });
+
+    numDocInput.addEventListener('input', function () {
+        const tipo = tipoDocSelect.value;
+        if (tipo === 'CC' || tipo === 'TI') {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        } else {
+            this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        }
+    });
+
+    actualizarReglasDocumento();
+
+    // 3. RESTRICCIÓN PARA TELÉFONO: Solo números (10 dígitos)
+    telefonoInput.addEventListener('keypress', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
+        if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+    });
+    telefonoInput.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+    });
+
+    // 4. RESTRICCIÓN PARA CORREO: Sin espacios
+    correoInput.addEventListener('keypress', function (e) {
+        if (e.key === ' ') e.preventDefault();
+    });
+    correoInput.addEventListener('input', function () {
+        this.value = this.value.replace(/\s/g, '');
+    });
+
+    // 5. VALIDACIÓN DEL FORMULARIO AL ENVIAR
+    form.addEventListener('submit', function (e) {
+        let esValido = true;
+        [nombresInput, apellidosInput, numDocInput, telefonoInput, correoInput].forEach(function (campo) {
+            if (!campo.checkValidity()) {
+                campo.classList.add('is-invalid');
+                esValido = false;
+            } else {
+                campo.classList.remove('is-invalid');
+                campo.classList.add('is-valid');
+            }
+        });
+
+        if (!esValido) {
+            e.preventDefault();
+            e.stopPropagation();
+            const primerInvalido = form.querySelector('.is-invalid');
+            if (primerInvalido) primerInvalido.focus();
+        }
+    });
+
+    form.querySelectorAll('.form-control, .form-select').forEach(function (campo) {
+        campo.addEventListener('input', function () {
+            if (this.checkValidity()) this.classList.remove('is-invalid');
+        });
+    });
+});
+</script>
+{% endblock %}

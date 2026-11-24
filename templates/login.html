@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4 my-md-5" data-aos="fade-up">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-7 col-lg-5 col-xl-4">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5 text-center">
+                    
+                    <div class="bg-primary text-white p-3 rounded-circle d-inline-flex mb-3 shadow-sm">
+                        <i class="bi bi-shield-lock-fill fs-2"></i>
+                    </div>
+                    
+                    <h3 class="fw-bold text-dark mb-1">Acceso al Sistema</h3>
+                    <p class="text-muted small mb-4">Ingresa tus credenciales para acceder a SysHSENA</p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="form-floating mb-3 text-start">
+                            <input type="text" name="username" class="form-control" id="floatingInput" placeholder="Usuario" required autocomplete="username">
+                            <label for="floatingInput"><i class="bi bi-person me-1"></i> Usuario</label>
+                        </div>
+
+                        <div class="form-floating mb-4 text-start">
+                            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Contraseña" required autocomplete="current-password">
+                            <label for="floatingPassword"><i class="bi bi-key me-1"></i> Contraseña</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold text-uppercase rounded-3 shadow-sm mb-3">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
+                        </button>
+
+                        <div class="border-top pt-3 mt-3">
+                            <p class="text-muted small mb-1">¿Aún no tienes una cuenta de huésped?</p>
+                            <a href="{% url 'registro' %}" class="fw-bold text-primary text-decoration-none">
+                                <i class="bi bi-person-plus me-1"></i> Crea tu cuenta aquí
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

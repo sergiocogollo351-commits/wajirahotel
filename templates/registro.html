@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-3 my-md-5" data-aos="fade-up">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-3 p-sm-4 p-md-5">
+                
+                <div class="text-center mb-4">
+                    <div class="bg-primary text-white p-3 rounded-circle d-inline-flex mb-2">
+                        <i class="bi bi-person-plus-fill fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark">Registro de Huésped</h3>
+                    <p class="text-muted small">Crea tu cuenta de cliente para gestionar tus reservas en el Hotel Wajira</p>
+                </div>
+
+                <form method="POST" id="registroForm" novalidate>
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <!-- Nombres -->
+                        <div class="col-md-6">
+                            <label for="id_nombres" class="form-label small fw-bold">Nombres</label>
+                            <input type="text" 
+                                   id="id_nombres" 
+                                   name="nombres" 
+                                   class="form-control" 
+                                   placeholder="Ej. Carlos Alberto" 
+                                   value="{{ form_data.nombres|default:'' }}"
+                                   minlength="2" 
+                                   maxlength="50" 
+                                   pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]{2,50}$" 
+                                   autocomplete="given-name" 
+                                   required>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Solo letras y espacios
+                            </small>
+                            <div class="invalid-feedback">Por favor ingresa únicamente letras y espacios (mínimo 2 caracteres).</div>
+                        </div>
+
+                        <!-- Apellidos -->
+                        <div class="col-md-6">
+                            <label for="id_apellidos" class="form-label small fw-bold">Apellidos</label>
+                            <input type="text" 
+                                   id="id_apellidos" 
+                                   name="apellidos" 
+                                   class="form-control" 
+                                   placeholder="Ej. Gómez Pérez" 
+                                   value="{{ form_data.apellidos|default:'' }}"
+                                   minlength="2" 
+                                   maxlength="50" 
+                                   pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]{2,50}$" 
+                                   autocomplete="family-name" 
+                                   required>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Solo letras y espacios
+                            </small>
+                            <div class="invalid-feedback">Por favor ingresa únicamente letras y espacios (mínimo 2 caracteres).</div>
+                        </div>
+
+                        <!-- Tipo de Documento -->
+                        <div class="col-md-4">
+                            <label for="id_tipo_documento" class="form-label small fw-bold">Tipo Doc.</label>
+                            <select id="id_tipo_documento" name="tipo_documento" class="form-select" required>
+                                <option value="CC" {% if form_data.tipo_documento == 'CC' or not form_data.tipo_documento %}selected{% endif %}>Cédula (CC)</option>
+                                <option value="CE" {% if form_data.tipo_documento == 'CE' %}selected{% endif %}>Cédula Ext. (CE)</option>
+                                <option value="PASAPORTE" {% if form_data.tipo_documento == 'PASAPORTE' %}selected{% endif %}>Pasaporte</option>
+                                <option value="TI" {% if form_data.tipo_documento == 'TI' %}selected{% endif %}>Tarjeta de Identidad (TI)</option>
+                            </select>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-card-text text-primary me-1"></i>Tipo de ID
+                            </small>
+                        </div>
+
+                        <!-- Número de Documento -->
+                        <div class="col-md-8">
+                            <label for="id_numero_documento" class="form-label small fw-bold">Número de Documento</label>
+                            <input type="text" 
+                                   id="id_numero_documento" 
+                                   name="numero_documento" 
+                                   class="form-control" 
+                                   placeholder="Ej. 1082000000" 
+                                   value="{{ form_data.numero_documento|default:'' }}"
+                                   inputmode="numeric" 
+                                   minlength="6" 
+                                   maxlength="10" 
+                                   required>
+                            <small id="doc_help_text" class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Solo números (6 a 10 dígitos)
+                            </small>
+                            <div id="doc_feedback" class="invalid-feedback">Ingresa un número de documento válido.</div>
+                        </div>
+
+                        <!-- Teléfono de Contacto -->
+                        <div class="col-md-6">
+                            <label for="id_telefono" class="form-label small fw-bold">Teléfono de Contacto</label>
+                            <input type="tel" 
+                                   id="id_telefono" 
+                                   name="telefono" 
+                                   class="form-control" 
+                                   placeholder="Ej. 3001234567" 
+                                   value="{{ form_data.telefono|default:'' }}"
+                                   inputmode="numeric" 
+                                   minlength="10" 
+                                   maxlength="10" 
+                                   pattern="^[0-9]{10}$" 
+                                   autocomplete="tel" 
+                                   required>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Solo números (10 dígitos)
+                            </small>
+                            <div class="invalid-feedback">Ingresa un teléfono válido de 10 dígitos numéricos.</div>
+                        </div>
+
+                        <!-- Nacionalidad -->
+                        <div class="col-md-6">
+                            <label for="id_nacionalidad" class="form-label small fw-bold">Nacionalidad</label>
+                            <select id="id_nacionalidad" name="nacionalidad" class="form-select" required>
+                                <option value="Colombiana" {% if form_data.nacionalidad == 'Colombiana' or not form_data.nacionalidad %}selected{% endif %}>Colombiana</option>
+                                <option value="Venezolana" {% if form_data.nacionalidad == 'Venezolana' %}selected{% endif %}>Venezolana</option>
+                                <option value="Estadounidense" {% if form_data.nacionalidad == 'Estadounidense' %}selected{% endif %}>Estadounidense</option>
+                                <option value="Española" {% if form_data.nacionalidad == 'Española' %}selected{% endif %}>Española</option>
+                                <option value="Argentina" {% if form_data.nacionalidad == 'Argentina' %}selected{% endif %}>Argentina</option>
+                                <option value="Peruana" {% if form_data.nacionalidad == 'Peruana' %}selected{% endif %}>Peruana</option>
+                                <option value="Ecuatoriana" {% if form_data.nacionalidad == 'Ecuatoriana' %}selected{% endif %}>Ecuatoriana</option>
+                                <option value="Mexicana" {% if form_data.nacionalidad == 'Mexicana' %}selected{% endif %}>Mexicana</option>
+                                <option value="Panameña" {% if form_data.nacionalidad == 'Panameña' %}selected{% endif %}>Panameña</option>
+                                <option value="Chilena" {% if form_data.nacionalidad == 'Chilena' %}selected{% endif %}>Chilena</option>
+                                <option value="Brasileña" {% if form_data.nacionalidad == 'Brasileña' %}selected{% endif %}>Brasileña</option>
+                                <option value="Francesa" {% if form_data.nacionalidad == 'Francesa' %}selected{% endif %}>Francesa</option>
+                                <option value="Alemana" {% if form_data.nacionalidad == 'Alemana' %}selected{% endif %}>Alemana</option>
+                                <option value="Italiana" {% if form_data.nacionalidad == 'Italiana' %}selected{% endif %}>Italiana</option>
+                                <option value="Canadiense" {% if form_data.nacionalidad == 'Canadiense' %}selected{% endif %}>Canadiense</option>
+                                <option value="Otra" {% if form_data.nacionalidad == 'Otra' %}selected{% endif %}>Otra nacionalidad</option>
+                            </select>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-globe text-primary me-1"></i>País de origen
+                            </small>
+                        </div>
+
+                        <!-- Correo Electrónico -->
+                        <div class="col-12">
+                            <label for="id_email" class="form-label small fw-bold">Correo Electrónico</label>
+                            <input type="email" 
+                                   id="id_email" 
+                                   name="email" 
+                                   class="form-control" 
+                                   placeholder="cliente@correo.com" 
+                                   value="{{ form_data.email|default:'' }}"
+                                   inputmode="email" 
+                                   maxlength="80" 
+                                   pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" 
+                                   autocomplete="email" 
+                                   required>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Formato: usuario@ejemplo.com (sin espacios)
+                            </small>
+                            <div class="invalid-feedback">Ingresa una dirección de correo válida (ej. cliente@correo.com).</div>
+                        </div>
+
+                        <!-- Nombre de Usuario -->
+                        <div class="col-md-6">
+                            <label for="id_username" class="form-label small fw-bold">Nombre de Usuario</label>
+                            <input type="text" 
+                                   id="id_username" 
+                                   name="username" 
+                                   class="form-control" 
+                                   placeholder="usuario123" 
+                                   value="{{ form_data.username|default:'' }}"
+                                   minlength="4" 
+                                   maxlength="20" 
+                                   pattern="^[a-zA-Z0-9._]{4,20}$" 
+                                   autocomplete="username" 
+                                   required>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>4-20 caracteres: letras, números, . o _ (sin espacios)
+                            </small>
+                            <div class="invalid-feedback">De 4 a 20 caracteres: solo letras, números, puntos y guiones bajos (sin espacios).</div>
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="col-md-6">
+                            <label for="id_password" class="form-label small fw-bold">Contraseña</label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       id="id_password" 
+                                       name="password" 
+                                       class="form-control" 
+                                       placeholder="••••••••" 
+                                       minlength="6" 
+                                       maxlength="50" 
+                                       autocomplete="new-password" 
+                                       required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn" title="Mostrar/ocultar contraseña">
+                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>Mínimo 6 caracteres
+                            </small>
+                            <div class="invalid-feedback">La contraseña debe tener mínimo 6 caracteres.</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold text-uppercase rounded-2 shadow-sm mt-4">
+                        <i class="bi bi-check-circle-fill me-1"></i> Crear Cuenta y Registrarse
+                    </button>
+
+                    <div class="text-center border-top pt-3 mt-3">
+                        <small class="text-muted">¿Ya tienes una cuenta? <a href="{% url 'login' %}" class="fw-bold text-primary">Inicia Sesión</a></small>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const nombresInput = document.getElementById('id_nombres');
+    const apellidosInput = document.getElementById('id_apellidos');
+    const tipoDocSelect = document.getElementById('id_tipo_documento');
+    const numDocInput = document.getElementById('id_numero_documento');
+    const docHelpText = document.getElementById('doc_help_text');
+    const docFeedback = document.getElementById('doc_feedback');
+    const telefonoInput = document.getElementById('id_telefono');
+    const emailInput = document.getElementById('id_email');
+    const usernameInput = document.getElementById('id_username');
+    const passwordInput = document.getElementById('id_password');
+    const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+    const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+    const form = document.getElementById('registroForm');
+
+    // 1. RESTRICCIÓN PARA NOMBRES Y APELLIDOS: Solo letras y espacios
+    function restringirSoloLetras(input) {
+        // Al presionar tecla: bloquear todo lo que no sea letra o espacio
+        input.addEventListener('keypress', function (e) {
+            // Permitir teclas especiales como Enter, Tab, etc.
+            if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+        // Al pegar o autocompletar: limpiar cualquier carácter inválido al instante
+        input.addEventListener('input', function () {
+            this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+        });
+    }
+    restringirSoloLetras(nombresInput);
+    restringirSoloLetras(apellidosInput);
+
+    // 2. RESTRICCIÓN PARA NÚMERO DE DOCUMENTO: Dinámico según Tipo de Documento
+    function actualizarReglasDocumento() {
+        const tipo = tipoDocSelect.value;
+        if (tipo === 'CC' || tipo === 'TI') {
+            // Cédula o Tarjeta de Identidad: Solo números (6 a 10 dígitos)
+            numDocInput.setAttribute('inputmode', 'numeric');
+            numDocInput.setAttribute('minlength', '6');
+            numDocInput.setAttribute('maxlength', '10');
+            numDocInput.setAttribute('pattern', '^[0-9]{6,10}$');
+            numDocInput.placeholder = 'Ej. 1082000000';
+            docHelpText.innerHTML = '<i class="bi bi-info-circle text-primary me-1"></i>Solo números (6 a 10 dígitos)';
+            docFeedback.textContent = 'Debe contener entre 6 y 10 dígitos numéricos.';
+            // Limpiar si ya tenía letras
+            numDocInput.value = numDocInput.value.replace(/[^0-9]/g, '').slice(0, 10);
+        } else {
+            // CE o Pasaporte: Alfanumérico (letras y números, sin espacios ni símbolos)
+            numDocInput.setAttribute('inputmode', 'text');
+            numDocInput.setAttribute('minlength', '5');
+            numDocInput.setAttribute('maxlength', '15');
+            numDocInput.setAttribute('pattern', '^[a-zA-Z0-9]{5,15}$');
+            numDocInput.placeholder = 'Ej. AB123456';
+            docHelpText.innerHTML = '<i class="bi bi-info-circle text-primary me-1"></i>Letras y números (5 a 15 caracteres)';
+            docFeedback.textContent = 'Debe tener entre 5 y 15 caracteres alfanuméricos.';
+            // Limpiar si tenía caracteres especiales o espacios
+            numDocInput.value = numDocInput.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 15);
+        }
+    }
+
+    tipoDocSelect.addEventListener('change', actualizarReglasDocumento);
+
+    // Bloqueo de teclas para número de documento
+    numDocInput.addEventListener('keypress', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
+        const tipo = tipoDocSelect.value;
+        if (tipo === 'CC' || tipo === 'TI') {
+            if (!/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+            }
+        } else {
+            if (!/^[a-zA-Z0-9]$/.test(e.key)) {
+                e.preventDefault();
+            }
+        }
+    });
+
+    numDocInput.addEventListener('input', function () {
+        const tipo = tipoDocSelect.value;
+        if (tipo === 'CC' || tipo === 'TI') {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        } else {
+            this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        }
+    });
+
+    actualizarReglasDocumento();
+
+    // 3. RESTRICCIÓN PARA TELÉFONO: Solo números (exactamente 10 dígitos)
+    telefonoInput.addEventListener('keypress', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
+        if (!/^[0-9]$/.test(e.key)) {
+            e.preventDefault();
+        }
+    });
+    telefonoInput.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+    });
+
+    // 4. RESTRICCIÓN PARA CORREO ELECTRÓNICO: Sin espacios
+    emailInput.addEventListener('keypress', function (e) {
+        if (e.key === ' ') {
+            e.preventDefault();
+        }
+    });
+    emailInput.addEventListener('input', function () {
+        this.value = this.value.replace(/\s/g, '');
+    });
+
+    // 5. RESTRICCIÓN PARA NOMBRE DE USUARIO: Solo letras, números, puntos y guiones bajos (sin espacios ni acentos)
+    usernameInput.addEventListener('keypress', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
+        if (!/^[a-zA-Z0-9._]$/.test(e.key)) {
+            e.preventDefault();
+        }
+    });
+    usernameInput.addEventListener('input', function () {
+        this.value = this.value.replace(/[^a-zA-Z0-9._]/g, '').toLowerCase().slice(0, 20);
+    });
+
+    // 6. TOGGLE CONTRASEÑA (VER / OCULTAR)
+    if (togglePasswordBtn) {
+        togglePasswordBtn.addEventListener('click', function () {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            togglePasswordIcon.classList.toggle('bi-eye', !isPassword);
+            togglePasswordIcon.classList.toggle('bi-eye-slash', isPassword);
+        });
+    }
+
+    // 7. VALIDACIÓN AL ENVIAR FORMULARIO
+    form.addEventListener('submit', function (e) {
+        let esValido = true;
+
+        // Comprobación de campos requeridos y patrones
+        [nombresInput, apellidosInput, numDocInput, telefonoInput, emailInput, usernameInput, passwordInput].forEach(function (campo) {
+            if (!campo.checkValidity()) {
+                campo.classList.add('is-invalid');
+                esValido = false;
+            } else {
+                campo.classList.remove('is-invalid');
+                campo.classList.add('is-valid');
+            }
+        });
+
+        if (!esValido) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Desplazar al primer campo inválido
+            const primerInvalido = form.querySelector('.is-invalid');
+            if (primerInvalido) {
+                primerInvalido.focus();
+            }
+        }
+    });
+
+    // Quitar clases de validación mientras el usuario escribe
+    form.querySelectorAll('.form-control, .form-select').forEach(function (campo) {
+        campo.addEventListener('input', function () {
+            if (this.checkValidity()) {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

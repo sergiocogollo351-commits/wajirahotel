@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4" data-aos="fade-up">
+    <!-- Encabezado de Recepción -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold m-0"><i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Mapa de Estado de Habitaciones</h2>
+            <p class="text-muted small m-0">Panel de control táctil en tiempo real para recepción</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'panel_limpieza' %}" class="btn btn-warning fw-bold shadow-sm text-dark">
+                <i class="bi bi-stars me-1"></i> Panel de Limpieza / Ama de Llaves
+            </a>
+            <a href="{% url 'crear_reserva' %}" class="btn btn-primary fw-bold shadow-sm"><i class="bi bi-plus-circle me-1"></i> Nueva Reserva</a>
+            <a href="{% url 'lista_reservas' %}" class="btn btn-outline-secondary fw-bold shadow-sm"><i class="bi bi-list-task me-1"></i> Lista de Reservas</a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN DE NOTIFICACIONES Y APROBACIÓN DE PEDIDOS PENDIENTES -->
+    {% if pedidos_pendientes %}
+    <div class="card border-0 shadow-sm border-start border-warning border-4 mb-4 bg-light p-3" data-aos="zoom-in">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold text-dark m-0">
+                <i class="bi bi-bell-fill text-warning me-2"></i> Solicitudes de Servicio & Bar Pendientes de Aprobación
+            </h5>
+            <span class="badge bg-warning text-dark fs-6">{{ pedidos_pendientes|length }} Pendiente(s)</span>
+        </div>
+        <div class="table-responsive bg-white rounded-3 p-2 shadow-sm">
+            <table class="table table-hover align-middle m-0">
+                <thead>
+                    <tr>
+                        <th>Habitación</th>
+                        <th>Huésped</th>
+                        <th>Producto / Servicio</th>
+                        <th>Cantidad</th>
+                        <th>Hora de Solicitud</th>
+                        <th class="text-center">Decisión & Disponibilidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pedidos_pendientes %}
+                    <tr>
+                        <td class="fw-bold text-primary">Habitación {{ p.reserva.habitacion.numero }}</td>
+                        <td>{{ p.reserva.huesped.nombres }} {{ p.reserva.huesped.apellidos }}</td>
+                        <td class="fw-bold">{{ p.servicio.nombre }}</td>
+                        <td><span class="badge bg-secondary">x{{ p.cantidad }}</span></td>
+                        <td class="small text-muted"><i class="bi bi-clock me-1"></i> {{ p.fecha_solicitud|date:"h:i A" }}</td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center align-items-center gap-2">
+                                <form action="{% url 'procesar_pedido_huesped' p.id %}" method="POST" class="m-0">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="accion" value="aprobar">
+                                    <button type="submit" class="btn btn-sm btn-success fw-bold">
+                                        <i class="bi bi-check-circle me-1"></i> Aprobar
+                                    </button>
+                                </form>
+
+                                <button type="button" class="btn btn-sm btn-outline-danger fw-bold" data-bs-toggle="collapse" data-bs-target="#rechazarForm{{ p.id }}">
+                                    <i class="bi bi-x-circle me-1"></i> Rechazar
+                                </button>
+                            </div>
+
+                            <div class="collapse mt-2 text-start" id="rechazarForm{{ p.id }}">
+                                <form action="{% url 'procesar_pedido_huesped' p.id %}" method="POST" class="p-2 border rounded bg-light shadow-sm">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="accion" value="rechazar">
+                                    <label class="form-label small fw-bold text-danger m-0 mb-1">Motivo de No Disponibilidad:</label>
+                                    <select name="motivo_rechazo" class="form-select form-select-sm mb-2">
+                                        <option value="Agotado en cocina / bar">Agotado en cocina / bar</option>
+                                        <option value="Servicio fuera de horario">Servicio fuera de horario</option>
+                                        <option value="No disponible en el momento">No disponible en el momento</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-danger w-100 fw-bold">Confirmar Rechazo</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Indicadores de Filtro -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <a href="{% url 'grid_recepcion' %}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3 {% if not filtro_estado %}border-start border-primary border-4{% endif %} card-animate">
+                    <small class="text-muted fw-bold text-uppercase">Todas</small>
+                    <h3 class="fw-bold text-dark m-0">{{ total_hab }}</h3>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'grid_recepcion' %}?estado=DISPONIBLE" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3 {% if filtro_estado == 'DISPONIBLE' %}border-start border-success border-4{% endif %} card-animate">
+                    <small class="text-success fw-bold text-uppercase"><i class="bi bi-check-circle me-1"></i> Disponibles</small>
+                    <h3 class="fw-bold text-success m-0">{{ disp_count }}</h3>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'grid_recepcion' %}?estado=OCUPADA" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3 {% if filtro_estado == 'OCUPADA' %}border-start border-danger border-4{% endif %} card-animate">
+                    <small class="text-danger fw-bold text-uppercase"><i class="bi bi-person-fill me-1"></i> Ocupadas</small>
+                    <h3 class="fw-bold text-danger m-0">{{ ocup_count }}</h3>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'grid_recepcion' %}?limpieza=SUCIA" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3 {% if filtro_limpieza == 'SUCIA' %}border-start border-warning border-4{% endif %} card-animate">
+                    <small class="text-danger fw-bold text-uppercase"><i class="bi bi-stars me-1"></i> Requieren Aseo</small>
+                    <h3 class="fw-bold text-danger m-0">{{ sucias_count }}</h3>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Cuadrícula de Tarjetas -->
+    <div class="row g-4">
+        {% for item in habitaciones_datos %}
+        <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm card-animate rounded-3 overflow-hidden">
+                
+                <div class="py-1 {% if item.habitacion.estado == 'DISPONIBLE' %}bg-success{% elif item.habitacion.estado == 'OCUPADA' %}bg-danger{% else %}bg-warning{% endif %}"></div>
+
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="fs-3 fw-extrabold text-dark">Hab. {{ item.habitacion.numero }}</span>
+                            <small class="text-muted d-block fw-semibold">Piso {{ item.habitacion.piso }} · {{ item.habitacion.tipo.nombre }}</small>
+                        </div>
+                        <div class="text-end">
+                            {% if item.habitacion.estado == 'DISPONIBLE' %}
+                                <span class="badge bg-success-subtle text-success border border-success fw-bold d-block mb-1">Disponible</span>
+                            {% elif item.habitacion.estado == 'OCUPADA' %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger fw-bold d-block mb-1">Ocupada</span>
+                            {% else %}
+                                <span class="badge bg-warning-subtle text-warning border border-warning fw-bold d-block mb-1">Mantenimiento</span>
+                            {% endif %}
+
+                            <!-- Insignia de Estado de Limpieza -->
+                            {% if item.habitacion.estado_limpieza == 'LIMPIA' %}
+                                <span class="badge bg-success"><i class="bi bi-stars"></i> Limpia</span>
+                            {% elif item.habitacion.estado_limpieza == 'EN_LIMPIEZA' %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> En Limpieza</span>
+                            {% else %}
+                                <span class="badge bg-danger"><i class="bi bi-trash"></i> Por Limpiar</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="my-3 py-2 border-top border-bottom">
+                        <small class="text-muted d-block">Tarifa por Noche:</small>
+                        <span class="fs-5 fw-bold text-primary">${{ item.habitacion.precio|floatformat:0 }}</span>
+                    </div>
+
+                    {% if item.habitacion.estado == 'OCUPADA' and item.reserva_activa %}
+                        <div class="bg-light p-2 rounded-2 mb-3 small">
+                            <p class="m-0 fw-bold text-dark"><i class="bi bi-person me-1"></i> {{ item.reserva_activa.huesped.nombres }} {{ item.reserva_activa.huesped.apellidos }}</p>
+                            <small class="text-muted"><i class="bi bi-calendar-event me-1"></i> Salida: {{ item.reserva_activa.fecha_salida }}</small>
+                        </div>
+                    {% endif %}
+
+                    <!-- Acciones de Estado -->
+                    <div class="mt-auto pt-2 d-flex flex-column gap-2">
+                        {% if item.habitacion.estado == 'DISPONIBLE' %}
+                            {% if item.habitacion.estado_limpieza == 'SUCIA' %}
+                                <div class="alert alert-warning py-1 px-2 m-0 small text-center fw-bold border-0">
+                                    ⚠️ Requiere aseo antes de Check-In
+                                </div>
+                            {% endif %}
+                            <a href="{% url 'crear_reserva' %}?habitacion={{ item.habitacion.id }}" class="btn btn-outline-success btn-sm w-100 fw-bold">
+                                <i class="bi bi-calendar-plus me-1"></i> Reservar Ahora
+                            </a>
+                        {% elif item.habitacion.estado == 'OCUPADA' and item.reserva_activa %}
+                            <a href="{% url 'realizar_checkout' item.reserva_activa.id %}" class="btn btn-outline-danger btn-sm w-100 fw-bold">
+                                <i class="bi bi-box-arrow-right me-1"></i> Check-Out / Factura
+                            </a>
+                        {% endif %}
+
+                        <!-- Cambiar Estado de Aseo desde Recepción -->
+                        <form action="{% url 'cambiar_limpieza_habitacion' item.habitacion.id %}" method="POST" class="m-0">
+                            {% csrf_token %}
+                            <div class="input-group input-group-sm">
+                                <select name="nuevo_estado_limpieza" class="form-select form-select-sm">
+                                    <option value="LIMPIA" {% if item.habitacion.estado_limpieza == 'LIMPIA' %}selected{% endif %}>🟢 Limpia</option>
+                                    <option value="EN_LIMPIEZA" {% if item.habitacion.estado_limpieza == 'EN_LIMPIEZA' %}selected{% endif %}>🟡 En Limpieza</option>
+                                    <option value="SUCIA" {% if item.habitacion.estado_limpieza == 'SUCIA' %}selected{% endif %}>🔴 Por Limpiar</option>
+                                </select>
+                                <button type="submit" class="btn btn-outline-dark fw-bold" title="Actualizar Aseo"><i class="bi bi-arrow-repeat"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted fs-5">No hay habitaciones registradas con este criterio.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

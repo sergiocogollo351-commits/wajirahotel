@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4" data-aos="fade-up">
+    <!-- Encabezado del Portal de Cliente -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold m-0"><i class="bi bi-journal-bookmark-fill text-primary me-2"></i>Mi Perfil & Historial de Estancia</h2>
+            <p class="text-muted small m-0">Estado de tus reservas, pedidos a la habitación y alertas en tiempo real</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'perfil' %}" class="btn btn-outline-secondary fw-bold shadow-sm">
+                <i class="bi bi-person-gear me-1"></i> Mi Perfil
+            </a>
+            <a href="{% url 'lista_servicios' %}" class="btn btn-outline-primary fw-bold shadow-sm">
+                <i class="bi bi-cup-hot me-1"></i> Pedir al Bar / Servicios
+            </a>
+            <a href="{% url 'crear_reserva' %}" class="btn btn-primary fw-bold shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Nueva Estancia
+            </a>
+        </div>
+    </div>
+
+    {% if not huesped %}
+        <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> Tu usuario actual no tiene asociado un perfil de huésped.
+        </div>
+    {% endif %}
+
+    {% for item in reservas_detalle %}
+    <div class="card border-0 shadow-sm mb-4 rounded-3 overflow-hidden" data-aos="fade-up">
+        <!-- Encabezado de Tarjeta de Reserva -->
+        <div class="card-header bg-white p-3 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+            <div>
+                <span class="badge bg-primary fs-6 me-2">Reserva #{{ item.reserva.id }}</span>
+                <span class="fw-extrabold fs-5 text-dark">Habitación {{ item.reserva.habitacion.numero }}</span>
+                <small class="text-muted d-block d-md-inline ms-md-2">({{ item.reserva.habitacion.tipo.nombre }})</small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                {% if item.reserva.estado == 'ACTIVA' %}
+                    <span class="badge bg-success-subtle text-success border border-success fw-bold">Estancia Activa</span>
+                {% elif item.reserva.estado == 'FINALIZADA' %}
+                    <span class="badge bg-secondary-subtle text-secondary border border-secondary fw-bold">Finalizada / Check-Out</span>
+                {% else %}
+                    <span class="badge bg-danger-subtle text-danger border border-danger fw-bold">Cancelada</span>
+                {% endif %}
+
+                <!-- Botón para ver/descargar Factura PDF -->
+                <a href="{% url 'descargar_factura_pdf' item.reserva.id %}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Factura PDF
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- 🚨 ALERTAS AUTOMÁTICAS DE CADUCIDAD DE HOSPEDAJE -->
+            {% if item.reserva.estado == 'ACTIVA' %}
+                {% if item.reserva.fecha_salida == hoy %}
+                    <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-3">
+                        <i class="bi bi-exclamation-octagon-fill fs-2 text-danger"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-danger">🚨 ¡ATENCIÓN: Tu hospedaje caduca HOY!</h6>
+                            <p class="small mb-0 text-dark">Tu fecha de salida es hoy <strong>{{ item.reserva.fecha_salida|date:"d/m/Y" }}</strong>. Recuerda realizar el Check-Out antes del mediodía en recepción o solicitar una extensión de tu estancia.</p>
+                        </div>
+                    </div>
+                {% elif item.dias_restantes <= 2 and item.dias_restantes > 0 %}
+                    <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-3">
+                        <i class="bi bi-clock-history fs-3 text-warning"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark">⏰ Próximo Vencimiento de Hospedaje</h6>
+                            <p class="small mb-0 text-dark">Te quedan <strong>{{ item.dias_restantes }} día(s)</strong> de estancia. Salida programada para el <strong>{{ item.reserva.fecha_salida|date:"d/m/Y" }}</strong>.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Resumen de Datos de Reserva -->
+            <div class="row g-4 mb-4 bg-light p-3 rounded-3 border">
+                <div class="col-6 col-md-3">
+                    <small class="text-muted d-block fw-semibold text-uppercase">Entrada</small>
+                    <span class="fw-bold text-dark"><i class="bi bi-calendar-check text-success me-1"></i> {{ item.reserva.fecha_entrada|date:"d/m/Y" }}</span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <small class="text-muted d-block fw-semibold text-uppercase">Salida</small>
+                    <span class="fw-bold text-dark"><i class="bi bi-calendar-x text-danger me-1"></i> {{ item.reserva.fecha_salida|date:"d/m/Y" }}</span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <small class="text-muted d-block fw-semibold text-uppercase">Total Estancia</small>
+                    <span class="fw-bold text-primary">${{ item.detalle.total_general|floatformat:0 }}</span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <small class="text-muted d-block fw-semibold text-uppercase">Saldo Pendiente</small>
+                    <span class="fw-bold {% if item.detalle.saldo_pendiente > 0 %}text-danger{% else %}text-success{% endif %}">
+                        ${{ item.detalle.saldo_pendiente|floatformat:0 }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- 🔔 SECCIÓN DE NOTIFICACIONES Y ESTADO DE PEDIDOS -->
+            <h6 class="fw-bold text-dark mb-3">
+                <i class="bi bi-bell-fill text-warning me-2"></i>Estado de tus Pedidos a la Habitación
+            </h6>
+
+            {% if item.pedidos_solicitados %}
+                <div class="table-responsive bg-white rounded-3 p-2 border shadow-sm">
+                    <table class="table table-hover align-middle m-0">
+                        <thead>
+                            <tr class="table-light">
+                                <th>Servicio / Producto</th>
+                                <th>Cantidad</th>
+                                <th>Fecha & Hora</th>
+                                <th>Estado del Pedido</th>
+                                <th>Observaciones / Disponibilidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in item.pedidos_solicitados %}
+                            <tr>
+                                <td class="fw-bold text-dark">{{ p.servicio.nombre }}</td>
+                                <td><span class="badge bg-secondary">x{{ p.cantidad }}</span></td>
+                                <td class="small text-muted"><i class="bi bi-clock me-1"></i> {{ p.fecha_solicitud|date:"d/m/Y h:i A" }}</td>
+                                <td>
+                                    {% if p.estado == 'PENDIENTE' %}
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> Verificando Disponibilidad</span>
+                                    {% elif p.estado == 'APROBADO' %}
+                                        <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> Aprobado & En Camino</span>
+                                    {% elif p.estado == 'RECHAZADO' %}
+                                        <span class="badge bg-danger"><i class="bi bi-x-circle-fill me-1"></i> Rechazado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if p.estado == 'PENDIENTE' %}
+                                        <small class="text-muted">En revisión por recepción / cocina...</small>
+                                    {% elif p.estado == 'APROBADO' %}
+                                        <small class="text-success fw-bold">Cargado a tu cuenta (${{ p.servicio.precio|floatformat:0 }})</small>
+                                    {% elif p.estado == 'RECHAZADO' %}
+                                        <small class="text-danger fw-bold"><i class="bi bi-info-circle me-1"></i> {{ p.motivo_rechazo|default:"No disponible" }}</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-3 bg-light rounded-3 text-center text-muted small">
+                    No has realizado pedidos de bar o restaurante para esta habitación.
+                </div>
+            {% endif %}
+
+            <!-- Botón de cancelación -->
+            {% if item.reserva.estado == 'ACTIVA' and not item.reserva.check_in %}
+                <div class="text-end mt-3">
+                    <a href="{% url 'cancelar_reserva' item.reserva.id %}" class="btn btn-sm btn-outline-danger fw-bold" onclick="return confirm('¿Está seguro de solicitar la cancelación de esta reserva?');">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar Reserva
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="card border-0 shadow-sm text-center py-5">
+        <i class="bi bi-journal-x fs-1 text-muted mb-2"></i>
+        <h5 class="fw-bold text-dark">No tienes reservas registradas actualmente</h5>
+        <p class="text-muted small">Realiza una reserva en línea para disfrutar de tu estancia en Hotel Wajira.</p>
+        <div>
+            <a href="{% url 'crear_reserva' %}" class="btn btn-primary fw-bold">Reservar Habitación</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

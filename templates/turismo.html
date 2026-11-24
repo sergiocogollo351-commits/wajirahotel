@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .turismo-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.7)), 
+                    url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+        color: white;
+        padding: 60px 15px;
+        text-align: center;
+    }
+    .turismo-title-responsive {
+        font-size: clamp(1.8rem, 6vw, 3.2rem);
+        line-height: 1.15;
+    }
+    .turismo-subtitle-responsive {
+        font-size: clamp(0.95rem, 3vw, 1.25rem);
+    }
+    .card-img-turismo {
+        height: 220px;
+        object-fit: cover;
+    }
+    @media (max-width: 768px) {
+        .turismo-hero {
+            padding: 40px 12px;
+        }
+    }
+</style>
+
+<div class="turismo-hero mb-4 mb-md-5 shadow-sm" data-aos="fade-down">
+    <div class="container">
+        <span class="badge bg-warning text-dark text-uppercase tracking-wider mb-2 px-3 py-2 fw-bold">Experiencia Regional SysHSENA</span>
+        <h1 class="turismo-title-responsive fw-bold text-uppercase">Descubre Riohacha y La Guajira</h1>
+        <p class="turismo-subtitle-responsive fw-light mx-auto mb-0" style="max-width: 750px;">
+            El Hotel Wajira es tu punto de partida para explorar la cultura Wayúu, gastronomía marina y paisajes únicos entre el desierto y el mar Caribe.
+        </p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4 mb-5 align-items-center">
+        <div class="col-md-6">
+            <div class="p-4 bg-white rounded-3 shadow-sm border-start border-4 border-warning">
+                <h3 class="fw-bold text-dark"><i class="bi bi-palette text-warning"></i> Riqueza Artesanal Wayúu</h3>
+                <p class="text-muted">
+                    En el Camellón de Riohacha podrás adquirir directo de las artesanas las auténticas <strong>Mochilas Susu</strong>, chinchorros de colores radiantes y artesanías representativas de la región.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-4 bg-white rounded-3 shadow-sm border-start border-4 border-primary">
+                <h3 class="fw-bold text-dark"><i class="bi bi-egg-fried text-primary"></i> Sabor Guajiro</h3>
+                <p class="text-muted">
+                    Deleita platos autóctonos como el <strong>Chivo en coco</strong>, arroz con camarones, friche tradicional y pescados marinados preparados por nuestros chefs locales.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row text-center mb-4">
+        <div class="col-12">
+            <h6 class="text-primary text-uppercase fw-bold tracking-widest">Rutas e Itinerarios</h6>
+            <h2 class="fw-bold">Sitios Turísticos y Excursiones Guiadas</h2>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for sitio in sitios %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                <img src="{{ sitio.imagen }}" class="card-img-top card-img-turismo" alt="{{ sitio.nombre }}">
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-primary-subtle text-primary fw-bold small">{{ sitio.categoria }}</span>
+                        <small class="text-muted"><i class="bi bi-geo-alt-fill text-danger"></i> {{ sitio.municipio }}</small>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">{{ sitio.nombre }}</h5>
+                    <p class="fw-bold text-primary fs-5 mb-2">${{ sitio.precio|floatformat:0 }} <small class="text-muted fs-6 fw-normal">/ persona</small></p>
+                    <p class="text-muted small flex-grow-1">{{ sitio.descripcion }}</p>
+                    
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                        <small class="fw-bold text-secondary"><i class="bi bi-clock me-1"></i> {{ sitio.distancia }}</small>
+                        
+                        {% if user.is_authenticated and reservas_activas_usuario %}
+                            <button type="button" class="btn btn-primary btn-sm rounded-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalTour{{ sitio.id }}">
+                                <i class="bi bi-compass me-1"></i> Reservar Tour
+                            </button>
+                        {% else %}
+                            <a href="{% url 'crear_reserva' %}" class="btn btn-outline-primary btn-sm rounded-2 fw-bold">
+                                Reservar Estancia
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE RESERVA DE TOUR -->
+        {% if user.is_authenticated and reservas_activas_usuario %}
+        <div class="modal fade" id="modalTour{{ sitio.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-header-title fw-bold m-0"><i class="bi bi-compass me-2"></i>Reservar Excursión: {{ sitio.nombre }}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'reservar_tour' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="nombre_tour" value="{{ sitio.nombre }}">
+                        <input type="hidden" name="precio_persona" value="{{ sitio.precio }}">
+                        
+                        <div class="modal-body p-4">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Selecciona tu Reserva / Habitación</label>
+                                <select name="reserva_id" class="form-select" required>
+                                    {% for r in reservas_activas_usuario %}
+                                        <option value="{{ r.id }}">Habitación {{ r.habitacion.numero }} (Reserva #{{ r.id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="form-label fw-bold small text-muted text-uppercase">Número de Personas</label>
+                                    <input type="number" name="personas" value="1" min="1" max="10" class="form-control" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold small text-muted text-uppercase">Fecha de la Excursión</label>
+                                    <input type="date" name="fecha_tour" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info border-0 mt-3 mb-0 small">
+                                <i class="bi bi-info-circle-fill me-1"></i> El costo del tour ($<strong>{{ sitio.precio|floatformat:0 }}</strong> por persona) se sumará al saldo de tu factura.
+                            </div>
+                        </div>
+
+                        <div class="modal-footer bg-light">
+                            <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success fw-bold">Confirmar y Cargar a la Cuenta</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

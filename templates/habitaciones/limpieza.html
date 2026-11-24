@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4" data-aos="fade-up">
+    <!-- Encabezado Móvil de Ama de Llaves -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold m-0"><i class="bi bi-stars text-warning me-2"></i>Panel de Limpieza & Ama de Llaves</h2>
+            <p class="text-muted small m-0">Control diario del estado de desinfección y alistamiento de habitaciones</p>
+        </div>
+        <div>
+            <a href="{% url 'grid_recepcion' %}" class="btn btn-outline-primary fw-bold shadow-sm">
+                <i class="bi bi-grid-3x3-gap me-1"></i> Volver a Recepción
+            </a>
+        </div>
+    </div>
+
+    <!-- Múltiples Filtros de Estado de Aseo -->
+    <div class="row g-3 mb-4">
+        <div class="col-4">
+            <a href="{% url 'panel_limpieza' %}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3 {% if not filtro %}border-start border-primary border-4{% endif %}">
+                    <small class="text-muted fw-bold text-uppercase">Todas</small>
+                    <h3 class="fw-bold text-dark m-0">{{ habitaciones|length }}</h3>
+                </div>
+            </a>
+        </div>
+        <div class="col-4">
+            <a href="{% url 'panel_limpieza' %}?filtro=SUCIA" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3 {% if filtro == 'SUCIA' %}border-start border-danger border-4{% endif %}">
+                    <small class="text-danger fw-bold text-uppercase"><i class="bi bi-trash me-1"></i> Por Limpiar</small>
+                    <h3 class="fw-bold text-danger m-0">{{ sucias }}</h3>
+                </div>
+            </a>
+        </div>
+        <div class="col-4">
+            <a href="{% url 'panel_limpieza' %}?filtro=EN_LIMPIEZA" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3 {% if filtro == 'EN_LIMPIEZA' %}border-start border-warning border-4{% endif %}">
+                    <small class="text-warning fw-bold text-uppercase"><i class="bi bi-hourglass-split me-1"></i> En Limpieza</small>
+                    <h3 class="fw-bold text-warning m-0">{{ en_limpieza }}</h3>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Lista Táctil de Habitaciones para el Personal de Aseo -->
+    <div class="row g-3">
+        {% for h in habitaciones %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-3 p-3 border-start border-4 {% if h.estado_limpieza == 'LIMPIA' %}border-success{% elif h.estado_limpieza == 'EN_LIMPIEZA' %}border-warning{% else %}border-danger{% endif %}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h4 class="fw-extrabold m-0 text-dark">Habitación {{ h.numero }}</h4>
+                        <small class="text-muted">Piso {{ h.piso }} · {{ h.tipo.nombre }}</small>
+                    </div>
+                    <div>
+                        {% if h.estado_limpieza == 'LIMPIA' %}
+                            <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i> Limpia</span>
+                        {% elif h.estado_limpieza == 'EN_LIMPIEZA' %}
+                            <span class="badge bg-warning text-dark fs-6"><i class="bi bi-hourglass-split me-1"></i> En Proceso</span>
+                        {% else %}
+                            <span class="badge bg-danger fs-6"><i class="bi bi-exclamation-triangle me-1"></i> Requiere Aseo</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <hr class="my-2 text-muted">
+
+                <!-- Botones de Cambio Rápidos de 1 Tapped -->
+                <div class="d-flex gap-2 mt-2">
+                    <form action="{% url 'cambiar_limpieza_habitacion' h.id %}" method="POST" class="flex-fill">
+                        {% csrf_token %}
+                        <input type="hidden" name="nuevo_estado_limpieza" value="EN_LIMPIEZA">
+                        <button type="submit" class="btn btn-sm btn-outline-warning text-dark w-100 fw-bold {% if h.estado_limpieza == 'EN_LIMPIEZA' %}active{% endif %}">
+                            🟡 En Limpieza
+                        </button>
+                    </form>
+
+                    <form action="{% url 'cambiar_limpieza_habitacion' h.id %}" method="POST" class="flex-fill">
+                        {% csrf_token %}
+                        <input type="hidden" name="nuevo_estado_limpieza" value="LIMPIA">
+                        <button type="submit" class="btn btn-sm btn-success w-100 fw-bold {% if h.estado_limpieza == 'LIMPIA' %}disabled{% endif %}">
+                            🟢 Marcar Limpia
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5 text-muted">
+            <i class="bi bi-stars fs-1 d-block mb-2"></i>
+            No hay habitaciones registradas en este estado de aseo.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

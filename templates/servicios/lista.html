@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4" data-aos="fade-up">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold m-0"><i class="bi bi-cup-hot-fill text-primary me-2"></i>Catálogo de Servicios y Menú</h2>
+            <p class="text-muted small m-0">Carta de restaurante, minibar, spa, lavandería y excursiones ordenados por categoría</p>
+        </div>
+        {% if user.is_staff %}
+            <a href="{% url 'crear_servicio' %}" class="btn btn-primary fw-bold shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Crear Nuevo Servicio
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Filtros de Categorías -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="{% url 'lista_servicios' %}" class="btn btn-sm {% if not categoria_filtro %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-bold">
+            Todas las Categorías
+        </a>
+        {% for cod, nombre_cat in categorias %}
+            <a href="{% url 'lista_servicios' %}?categoria={{ cod }}" class="btn btn-sm {% if categoria_filtro == cod %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-bold">
+                {{ nombre_cat }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Buscador -->
+    <form method="GET" class="mb-4">
+        {% if categoria_filtro %}
+            <input type="hidden" name="categoria" value="{{ categoria_filtro }}">
+        {% endif %}
+        <div class="input-group shadow-sm rounded-3 overflow-hidden">
+            <input type="text" name="q" class="form-control border-0 px-3" placeholder="Buscar por nombre o descripción del servicio..." value="{{ query }}">
+            <button class="btn btn-primary px-4 fw-bold" type="submit">
+                <i class="bi bi-search me-1"></i> Buscar
+            </button>
+            {% if query or categoria_filtro %}
+                <a href="{% url 'lista_servicios' %}" class="btn btn-outline-secondary px-3">
+                    <i class="bi bi-x-circle me-1"></i> Limpiar Filtros
+                </a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Tarjetas de Servicios -->
+    <div class="row g-4">
+        {% for s in servicios %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden card-animate">
+                {% if s.imagen %}
+                    <img src="{{ s.imagen.url }}" class="card-img-top" alt="{{ s.nombre }}" style="height: 180px; object-fit: cover;">
+                {% else %}
+                    <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Imagen genérica" style="height: 180px; object-fit: cover;">
+                {% endif %}
+
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary-subtle text-primary border border-primary fw-bold">{{ s.get_categoria_display }}</span>
+                        <span class="fs-4 fw-extrabold text-primary">${{ s.precio|floatformat:0 }}</span>
+                    </div>
+
+                    <h4 class="fw-bold text-dark mb-2">{{ s.nombre }}</h4>
+
+                    <p class="text-muted small my-2 flex-grow-1">
+                        {% if s.descripcion %}
+                            {{ s.descripcion }}
+                        {% else %}
+                            Servicio o consumo disponible para solicitar a la habitación o disfrutar en las instalaciones.
+                        {% endif %}
+                    </p>
+
+                    {% if not user.is_staff %}
+                        <div class="pt-3 border-top mt-2">
+                            {% if reservas_activas_usuario %}
+                                <form method="POST" action="{% url 'ordenar_servicio_huesped' s.id %}">
+                                    {% csrf_token %}
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-7">
+                                            <select name="reserva_id" class="form-select form-select-sm border-secondary-subtle fw-semibold" required>
+                                                {% for r in reservas_activas_usuario %}
+                                                    <option value="{{ r.id }}">Hab. {{ r.habitacion.numero }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <input type="number" name="cantidad" value="1" min="1" max="10" class="form-control form-select-sm text-center fw-bold" required>
+                                        </div>
+                                        <div class="col-12 mt-2">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary w-100 fw-bold">
+                                                <i class="bi bi-cart-plus me-1"></i> Pedir a Habitación
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            {% else %}
+                                <div class="bg-light p-2 rounded-2 text-center">
+                                    <small class="text-muted"><i class="bi bi-info-circle me-1"></i> Requiere reserva activa para ordenar a habitación</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5 text-muted">
+            <i class="bi bi-cup-straw fs-1 d-block mb-2"></i>
+            <p class="fs-5">No se encontraron servicios registrados en esta categoría.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
