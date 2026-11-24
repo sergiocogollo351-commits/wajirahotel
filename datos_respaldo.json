@@ -1,0 +1,592 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$SoqeBOLsXtYgpoQ1vhQaKT$yP/aj4XSyB5CGsMMuOwoLbQex/+0Q6Dhn9T2zDRJmRA=",
+    "last_login": "2026-11-24T13:44:46.071Z",
+    "is_superuser": true,
+    "username": "SDCS",
+    "first_name": "",
+    "last_name": "",
+    "email": "sergiocogollo351@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-10-21T16:10:47.260Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$BfLMxmb50d0C5oNwvsvqW4$Ex7gXnKGctZWmWSL5AqPsnVSUvYp0ep8Ophu5MpCezg=",
+    "last_login": "2026-11-24T13:31:11.125Z",
+    "is_superuser": false,
+    "username": "huesped",
+    "first_name": "sergio",
+    "last_name": "cogollo",
+    "email": "sergiocogollo351@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-10-21T16:19:51Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "2spotlc2lgsifatyiwe3009rela5myjj",
+  "fields": {
+    "session_data": ".eJxVjDsOgzAQRO_iOrLAP-yU6TmDtetdxySRkTBUUe4ekCiSKee9mbeIsK0lbo2XOJG4il5cfjuE9OR6AHpAvc8yzXVdJpSHIk_a5DgTv26n-3dQoJV9rZLJ4IlZORvCoFXnSZG2mAmD00ZBbyk4TAY7j3sysUlOOwt-0B7E5wvyWThp:1xVqpC:rwZCbykLcX4m0kJQVcllFPMLwlG8eJYPq6k6_Se0lrk",
+    "expire_date": "2026-12-08T13:44:46.075Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "wdiiy57l16sjckhj9krf7y2iravt8gt4",
+  "fields": {
+    "session_data": ".eJxVjDsOgzAQRO_iOrLAP-yU6TmDtetdxySRkTBUUe4ekCiSKee9mbeIsK0lbo2XOJG4il5cfjuE9OR6AHpAvc8yzXVdJpSHIk_a5DgTv26n-3dQoJV9rZLJ4IlZORvCoFXnSZG2mAmD00ZBbyk4TAY7j3sysUlOOwt-0B7E5wvyWThp:1xKIKx:ibE5s5uykH4PZQZkFWYodVma7xiOm59q8y86g1aayhs",
+    "expire_date": "2026-11-06T16:41:47.745Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "zfhvqgcqp0ad97ymx9ccujqinjx9aoci",
+  "fields": {
+    "session_data": ".eJxVjDsOgzAQRO_iOrLAP-yU6TmDtetdxySRkTBUUe4ekCiSKee9mbeIsK0lbo2XOJG4il5cfjuE9OR6AHpAvc8yzXVdJpSHIk_a5DgTv26n-3dQoJV9rZLJ4IlZORvCoFXnSZG2mAmD00ZBbyk4TAY7j3sysUlOOwt-0B7E5wvyWThp:1xMqOJ:J7fl4IG9gBFvwxR9dJ7kTBXv7STjLZhlBh-pYOKCUsM",
+    "expire_date": "2026-11-13T17:27:47.910Z"
+  }
+},
+{
+  "model": "gestion.rol",
+  "pk": 1,
+  "fields": {
+    "nombre": "admin"
+  }
+},
+{
+  "model": "gestion.rol",
+  "pk": 2,
+  "fields": {
+    "nombre": "huesped"
+  }
+},
+{
+  "model": "gestion.tipohabitacion",
+  "pk": 1,
+  "fields": {
+    "nombre": "familiar",
+    "descripcion": "para familias"
+  }
+},
+{
+  "model": "gestion.habitacion",
+  "pk": 1,
+  "fields": {
+    "numero": "0301",
+    "tipo": 1,
+    "capacidad": 8,
+    "precio": "4000000.00",
+    "piso": "4",
+    "estado": "DISPONIBLE",
+    "estado_limpieza": "LIMPIA",
+    "imagen": ""
+  }
+},
+{
+  "model": "gestion.habitacion",
+  "pk": 2,
+  "fields": {
+    "numero": "102",
+    "tipo": 1,
+    "capacidad": 5,
+    "precio": "40.00",
+    "piso": "2",
+    "estado": "DISPONIBLE",
+    "estado_limpieza": "SUCIA",
+    "imagen": "habitaciones/descarga_7.jpg"
+  }
+},
+{
+  "model": "gestion.habitacion",
+  "pk": 3,
+  "fields": {
+    "numero": "302",
+    "tipo": 1,
+    "capacidad": 2,
+    "precio": "100000.00",
+    "piso": "1",
+    "estado": "DISPONIBLE",
+    "estado_limpieza": "LIMPIA",
+    "imagen": "habitaciones/Gemini_Generated_Image_g7x8kag7x8kag7x8.jpg"
+  }
+},
+{
+  "model": "gestion.huesped",
+  "pk": 1,
+  "fields": {
+    "tipo_documento": "CC",
+    "numero_documento": "1119395039",
+    "nombres": "Sergio",
+    "apellidos": "Cogollo",
+    "telefono": "3046260310",
+    "correo": "sergiocogollo351@gmail.com",
+    "nacionalidad": "Colombiana"
+  }
+},
+{
+  "model": "gestion.huesped",
+  "pk": 2,
+  "fields": {
+    "tipo_documento": "TI",
+    "numero_documento": "123456789",
+    "nombres": "esteban",
+    "apellidos": "ruiz",
+    "telefono": "3114552503",
+    "correo": "sergiocogollo351@gmail.com",
+    "nacionalidad": "Colombiana"
+  }
+},
+{
+  "model": "gestion.huesped",
+  "pk": 3,
+  "fields": {
+    "tipo_documento": "CC",
+    "numero_documento": "5675675756DFGTBNHMJ;KL#$%&/()=?",
+    "nombres": "fgfdgfdgfdgfdgfdg#$%&/()=?",
+    "apellidos": "fdgfdgdfg\"#$%&/()=?¡! \" # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \\ ] ^ _ ` { | } ~",
+    "telefono": "rtretretret",
+    "correo": "sergiocogo#$%&/=?llo351@gmail.com",
+    "nacionalidad": "Colombiana"
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 1,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 1,
+    "fecha_entrada": "2026-10-01",
+    "fecha_salida": "2026-10-02",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 2,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 1,
+    "fecha_entrada": "2026-10-23",
+    "fecha_salida": "2026-10-24",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 3,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 1,
+    "fecha_entrada": "2026-10-24",
+    "fecha_salida": "2026-10-26",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 4,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 1,
+    "fecha_entrada": "2026-10-24",
+    "fecha_salida": "2026-10-29",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 5,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 1,
+    "fecha_entrada": "2026-10-31",
+    "fecha_salida": "2026-11-19",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 6,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 1,
+    "fecha_entrada": "2026-10-24",
+    "fecha_salida": "2026-10-31",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 7,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 1,
+    "fecha_entrada": "2026-09-23",
+    "fecha_salida": "2026-09-24",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 8,
+  "fields": {
+    "huesped": 2,
+    "habitacion": 2,
+    "fecha_entrada": "2026-10-27",
+    "fecha_salida": "2026-10-28",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 9,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 2,
+    "fecha_entrada": "2026-10-28",
+    "fecha_salida": "2026-10-29",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 10,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 2,
+    "fecha_entrada": "2026-10-30",
+    "fecha_salida": "2026-10-31",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 11,
+  "fields": {
+    "huesped": 2,
+    "habitacion": 1,
+    "fecha_entrada": "2026-10-30",
+    "fecha_salida": "2026-10-31",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 12,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 3,
+    "fecha_entrada": "2026-10-30",
+    "fecha_salida": "2026-10-31",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 13,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 1,
+    "fecha_entrada": "2026-10-30",
+    "fecha_salida": "2026-10-31",
+    "estado": "CANCELADA",
+    "check_in": false,
+    "check_out": false
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 14,
+  "fields": {
+    "huesped": 2,
+    "habitacion": 2,
+    "fecha_entrada": "2026-11-04",
+    "fecha_salida": "2026-11-05",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.reserva",
+  "pk": 15,
+  "fields": {
+    "huesped": 1,
+    "habitacion": 2,
+    "fecha_entrada": "2026-11-24",
+    "fecha_salida": "2026-11-25",
+    "estado": "FINALIZADA",
+    "check_in": true,
+    "check_out": true
+  }
+},
+{
+  "model": "gestion.servicio",
+  "pk": 1,
+  "fields": {
+    "nombre": "Producto 1",
+    "descripcion": null,
+    "categoria": "RESTAURANTE",
+    "precio": "20000.00",
+    "imagen": ""
+  }
+},
+{
+  "model": "gestion.servicioreserva",
+  "pk": 1,
+  "fields": {
+    "reserva": 12,
+    "servicio": 1,
+    "cantidad": 4,
+    "fecha_solicitud": "2026-10-30T16:12:57.900Z",
+    "atendido": true,
+    "estado": "RECHAZADO",
+    "motivo_rechazo": "No disponible en el momento"
+  }
+},
+{
+  "model": "gestion.servicioreserva",
+  "pk": 2,
+  "fields": {
+    "reserva": 9,
+    "servicio": 1,
+    "cantidad": 1,
+    "fecha_solicitud": "2026-10-30T16:40:48.728Z",
+    "atendido": true,
+    "estado": "RECHAZADO",
+    "motivo_rechazo": "Servicio fuera de horario"
+  }
+},
+{
+  "model": "gestion.servicioreserva",
+  "pk": 3,
+  "fields": {
+    "reserva": 9,
+    "servicio": 1,
+    "cantidad": 4,
+    "fecha_solicitud": "2026-10-30T16:59:54.099Z",
+    "atendido": true,
+    "estado": "APROBADO",
+    "motivo_rechazo": null
+  }
+},
+{
+  "model": "gestion.pago",
+  "pk": 1,
+  "fields": {
+    "reserva": 15,
+    "valor_pagado": "12.00",
+    "fecha_pago": "2026-11-24T13:27:58.273Z",
+    "metodo_pago": "TRANSFERENCIA"
+  }
+},
+{
+  "model": "gestion.reservatour",
+  "pk": 1,
+  "fields": {
+    "reserva": 14,
+    "nombre_tour": "Camellón y Muelle de Riohacha",
+    "personas": 4,
+    "precio_persona": "35000.00",
+    "fecha_tour": "2026-11-06",
+    "fecha_solicitud": "2026-11-04T12:42:01.332Z"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-10-21T16:19:51.880Z",
+    "user": [
+      "SDCS"
+    ],
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "huesped",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-10-21T16:20:20.048Z",
+    "user": [
+      "SDCS"
+    ],
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "huesped",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"Email address\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-10-22T17:35:05.108Z",
+    "user": [
+      "SDCS"
+    ],
+    "content_type": [
+      "gestion",
+      "tipohabitacion"
+    ],
+    "object_id": "1",
+    "object_repr": "familiar",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-10-22T17:35:19.530Z",
+    "user": [
+      "SDCS"
+    ],
+    "content_type": [
+      "gestion",
+      "habitacion"
+    ],
+    "object_id": "1",
+    "object_repr": "Habitacion 0301 - familiar",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-10-22T17:36:51.290Z",
+    "user": [
+      "SDCS"
+    ],
+    "content_type": [
+      "gestion",
+      "huesped"
+    ],
+    "object_id": "1",
+    "object_repr": "Sergio Cogollo",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-11-24T13:46:29.035Z",
+    "user": [
+      "SDCS"
+    ],
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "object_id": "3",
+    "object_repr": "ertret",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-11-24T13:46:29.035Z",
+    "user": [
+      "SDCS"
+    ],
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "object_id": "4",
+    "object_repr": "龘 靐 䨻 𪚥 𰻞 龖 𠔻 ",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-11-24T13:47:20.088Z",
+    "user": [
+      "SDCS"
+    ],
+    "content_type": [
+      "gestion",
+      "rol"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2026-11-24T13:48:10.656Z",
+    "user": [
+      "SDCS"
+    ],
+    "content_type": [
+      "gestion",
+      "rol"
+    ],
+    "object_id": "2",
+    "object_repr": "huesped",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+}
+]
